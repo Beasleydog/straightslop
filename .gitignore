@@ -21,3 +21,6 @@ __pycache__/
 sshprivate.key
 sshpublic.pub
 connect.sh
+
+done_ideas.txt
+next_ideas.txt

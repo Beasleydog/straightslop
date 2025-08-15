@@ -22,13 +22,37 @@ except Exception:
     def tqdm(x, **kwargs):
         return x
 
-#Delete all files in cache/animatedimages
-# for file in os.listdir("cache/animatedimages"):
-#     os.remove(os.path.join("cache/animatedimages", file))
-
+# Read first line from next_ideas.txt and move it to done_ideas.txt
+def update_default_title():
+    next_ideas_file = "next_ideas.txt"
+    done_ideas_file = "done_ideas.txt"
+    
+    if os.path.exists(next_ideas_file):
+        with open(next_ideas_file, 'r', encoding='utf-8') as f:
+            lines = f.readlines()
+        
+        if lines:
+            # Get first line and strip whitespace
+            first_line = lines[0].strip()
+            
+            # Write remaining lines back to next_ideas.txt
+            with open(next_ideas_file, 'w', encoding='utf-8') as f:
+                f.writelines(lines[1:])
+            
+            # Append first line to done_ideas.txt
+            with open(done_ideas_file, 'a', encoding='utf-8') as f:
+                f.write(first_line + '\n')
+            
+            return first_line
+        else:
+            raise Exception("No ideas available in next_ideas.txt")
+    else:
+        raise Exception("next_ideas.txt file not found")
+# Update DEFAULT_TITLE with first line from next_ideas.txt
+DEFAULT_TITLE = update_default_title()
 
 # Config
-DEFAULT_TITLE = "The Most Brutal Rituals of Samurai Initiation."
+# DEFAULT_TITLE = "The Most Brutal Rituals of Samurai Initiation."
 LAST_IMAGE_EXTRA_SECONDS = 1.0
 FIRST_IMAGE_EXTRA_SECONDS = 1.0
 CROSSFADE_SECONDS = 0.5
