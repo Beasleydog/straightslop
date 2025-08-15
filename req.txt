@@ -5,7 +5,7 @@ google-genai
 gradio-client
 faster-whisper
 playwright
-moviepy==1.0.3
+moviepy==2.2.1
 fal-client
 openai
 anthropic[vertex]

@@ -2,7 +2,7 @@ import math
 import random
 from typing import Tuple
 
-from moviepy.editor import ImageClip, CompositeVideoClip, vfx, afx
+from moviepy import ImageClip, CompositeVideoClip, vfx, afx
 
 
 def compute_crossfade(durations: list[float]) -> float:
