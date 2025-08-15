@@ -18,3 +18,6 @@ __pycache__/
 .coverage.*
 .coverage.*
 **/__pycache__/
+sshprivate.key
+sshpublic.pub
+connect.sh

@@ -6,6 +6,16 @@ from typing import Tuple
 from PIL import Image, ImageDraw, ImageFont, ImageFilter
 from generateImage import generateImage
 
+# PIL compatibility shim for deprecated constants
+try:
+    LANCZOS = Image.Resampling.LANCZOS
+    BICUBIC = Image.Resampling.BICUBIC
+    BILINEAR = Image.Resampling.BILINEAR
+except AttributeError:
+    LANCZOS = getattr(Image, "LANCZOS", Image.ANTIALIAS)
+    BICUBIC = Image.BICUBIC
+    BILINEAR = Image.BILINEAR
+
 # ---------------------------------------------------------------------------
 # Constants
 # ---------------------------------------------------------------------------
@@ -66,7 +76,7 @@ def _resize_cover(img: Image.Image, target_size: Tuple[int, int]) -> Image.Image
         return img.convert("RGB").resize((tw, th))
     scale = max(tw / iw, th / ih)
     nw, nh = int(iw * scale), int(ih * scale)
-    resized = img.resize((nw, nh), resample=Image.LANCZOS)
+    resized = img.resize((nw, nh), resample=LANCZOS)
     left = max(0, (nw - tw) // 2)
     top = max(0, (nh - th) // 2)
     return resized.crop((left, top, left + tw, top + th))

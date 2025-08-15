@@ -14,5 +14,5 @@ google-auth
 google-api-python-client
 google-auth-oauthlib
 google-auth-httplib2
-Pillow==9.5.0
+Pillow==10.3.0
 tqdm

@@ -8,6 +8,16 @@ from PIL import Image, ImageDraw, ImageFont, ImageFilter
 from gemini import ask_gemini
 from generateImage import generateImage
 
+# PIL compatibility shim for deprecated constants
+try:
+    LANCZOS = Image.Resampling.LANCZOS
+    BICUBIC = Image.Resampling.BICUBIC
+    BILINEAR = Image.Resampling.BILINEAR
+except AttributeError:
+    LANCZOS = getattr(Image, "LANCZOS", Image.ANTIALIAS)
+    BICUBIC = Image.BICUBIC
+    BILINEAR = Image.BILINEAR
+
 # ---------------------------------------------------------------------------
 # Constants
 # ---------------------------------------------------------------------------
@@ -189,7 +199,7 @@ def _generate_thumbnail_from_meta(script: str, image_prompt: str, text: str) -> 
     
     # For very high-resolution source images, ensure we don't create unnecessarily large files
     if img.size[0] * img.size[1] > TARGET_SIZE[0] * TARGET_SIZE[1]:
-        img = img.resize(TARGET_SIZE, Image.LANCZOS)
+        img = img.resize(TARGET_SIZE, LANCZOS)
     
     # Create gradient overlay
     gradient_overlay = _create_gradient_overlay(TARGET_SIZE)
@@ -308,7 +318,7 @@ def _resize_cover(img: Image.Image, target_size: Tuple[int, int]) -> Image.Image
         return img.convert("RGB").resize((tw, th))
     scale = max(tw / iw, th / ih)
     nw, nh = int(iw * scale), int(ih * scale)
-    resized = img.resize((nw, nh), resample=Image.LANCZOS)
+    resized = img.resize((nw, nh), resample=LANCZOS)
     left = max(0, (nw - tw) // 2)
     top = max(0, (nh - th) // 2)
     return resized.crop((left, top, left + tw, top + th))
