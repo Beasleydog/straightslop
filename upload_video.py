@@ -170,7 +170,13 @@ def set_thumbnail(youtube, video_id, thumbnail_path):
         return True
         
     except Exception as e:
-        print(f"❌ Failed to set thumbnail: {e}")
+        error_msg = str(e)
+        if "doesn't have permissions to upload and set custom video thumbnails" in error_msg:
+            print(f"⚠️  Thumbnail upload skipped: Your YouTube channel needs to be verified to upload custom thumbnails")
+            print(f"   You can verify your channel at: https://www.youtube.com/verify")
+            print(f"   Once verified, you can manually set the thumbnail from: {thumbnail_path}")
+        else:
+            print(f"❌ Failed to set thumbnail: {e}")
         return False
 
 
@@ -227,8 +233,8 @@ def poll_and_publish(youtube, video_id, poll_interval=30, timeout=1800):
             print(f"Failed to update privacy status: {e}")
 
 
-def publish_simple(title: str, thumbnail_path: str, file_path: str, description: str,
-                   category: str = "22", keywords: str = "") -> str:
+def publish_simple(title: str, file_path: str, description: str,
+                   thumbnail_path: str = None, category: str = "22", keywords: str = "") -> str:
     """
     Convenience one-shot publish:
       1) auth
@@ -246,8 +252,13 @@ def publish_simple(title: str, thumbnail_path: str, file_path: str, description:
         file=file_path,
     )
     video_id = initialize_upload(yt, opts)
+    
+    # Try to set thumbnail if provided, but don't fail the upload if it doesn't work
     if thumbnail_path:
-        set_thumbnail(yt, video_id, thumbnail_path)
+        thumbnail_success = set_thumbnail(yt, video_id, thumbnail_path)
+        if not thumbnail_success:
+            print("⚠️  Continuing with upload despite thumbnail failure...")
+    
     poll_and_publish(yt, video_id)
     return f"https://www.youtube.com/watch?v={video_id}"
 
@@ -255,11 +266,11 @@ def publish_simple(title: str, thumbnail_path: str, file_path: str, description:
 if __name__ == "__main__":
     publish_simple(
         title="Test Title",
-        description="Test Description",
-        category="27",
-        keywords="",
         file_path="output_overlay.mp4",
-        thumbnail_path="cache/thumbnails/28f4eb7f861db4adcdbe2d9d72608f38.png"
+        description="Test Description",
+        thumbnail_path="cache/thumbnails/28f4eb7f861db4adcdbe2d9d72608f38.png",
+        category="27",
+        keywords=""
     )
     # parser = argparse.ArgumentParser()
     # parser.add_argument("--file", help="Video file to upload (optional for auth-only)")

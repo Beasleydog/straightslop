@@ -177,9 +177,9 @@ def main() -> None:
         print("Uploading to YouTube...")
         watch_url = publish_simple(
             title=meta_data['title'],
-            thumbnail_path=meta_data['thumbnail_path'],
             file_path=overlay_video_path,
             description=meta_data['description'],
+            thumbnail_path=meta_data['thumbnail_path'],
             category="27",  # Education category
             keywords=meta_data['keywords']
         )
