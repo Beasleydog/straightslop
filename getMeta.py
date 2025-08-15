@@ -42,6 +42,7 @@ Output JUST a json object like this
 "keywords":"keyword1,keyword2,keyword3,keyword4,keyword5"
 }}
 
+- NEVER USE ANY MARKDOWN SYNTAX LIKE * IN THE TITLE, TEXT, DESCRIPTION, KEYWORDS. JUST STRAIGHT TEXT.
 - The image prompt should be very detailed
 - The text should be based off the script
 - The text should be eye catchy and interesting and clickbaity
