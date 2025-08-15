@@ -66,7 +66,7 @@ def _sanitize_prompt(prompt: str, strength: int, max_strength: int, model: str =
             f"safe and inoffensive whilst preserving as much detail and intent as possible. "
             f"Avoid any references that might trigger Google Imagen safety filters such as "
             f"child exploitation, hate, violence, sexual or dangerous content. "
-            f"At strength {strength}/{max_strength}, be {'extremely conservative and safe' if strength > max_strength // 2 else 'moderately cautious'}. "
+            f"At strength {strength}/{max_strength}, be {'extremely conservative and safe. MAKE ABSOLUTELY SURE IT IS SAFE AND DOESNT SHOW ANY HARM OR ANYTHNIG BAD IN THE SLIGHTEST' if strength > max_strength // 2 else 'moderately cautious'}. "
             f"Return ONLY the rewritten prompt text."
         )
         full_prompt = f"{system_instruction}\n\nUSER PROMPT:\n{prompt}"
@@ -195,7 +195,7 @@ def generate_image_google_imagen(prompt, output_path=None, seed=None, aspect_rat
                 negative_prompt="text, captions, subtitles, labels, letters, words",
                 image_size="2K",
                 safety_filter_level="BLOCK_ONLY_HIGH",
-                person_generation="ALLOW_ADULT",
+                person_generation="ALLOW_ALL",
                 enhance_prompt=False,
                 add_watermark=False,
             ),
