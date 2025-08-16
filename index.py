@@ -50,8 +50,7 @@ def update_default_title():
     else:
         raise Exception("next_ideas.txt file not found")
 # Update DEFAULT_TITLE with first line from next_ideas.txt
-# DEFAULT_TITLE = update_default_title()
-DEFAULT_TITLE = "The Most Brutal Rituals of Samurai Initiation."
+DEFAULT_TITLE = update_default_title()
 
 # Config
 # DEFAULT_TITLE = "The Most Brutal Rituals of Samurai Initiation."
@@ -96,8 +95,6 @@ def main() -> None:
     # Plan the video
     vo_sections, plan = getPlan(DEFAULT_TITLE, model="gemini-2.5-flash")
 
-    vo_sections = vo_sections[:3]
-    plan = plan[:3]
 
     print(vo_sections)
     section_outputs: list[str] = []
