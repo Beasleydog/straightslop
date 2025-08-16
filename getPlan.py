@@ -17,7 +17,7 @@ Prompt templates (edit these to change model instructions)
 PLAN_SECTIONS_PROMPT_TEMPLATE = """Plan out a youtube video script for this
 {topic_title}
 Output bullet point sections, each with a description of what content is included (just description, no exact vo or media plan)
-You should probably start with an intro to the video.
+NEVER INCLUDE AN INTRO SECTION.
 Minimal output, no yap, just list.
 Output JSON, like this:
 [

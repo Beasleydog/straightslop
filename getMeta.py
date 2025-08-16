@@ -31,30 +31,27 @@ TEXT_STROKE_WIDTH = 4  # Black border width
 TEXT_STROKE_FILL = (0, 0, 0)  # Black border
 GRADIENT_HEIGHT_RATIO: float = 0.5  # Gradient covers bottom 40% of image
 
-meta_prompt = """You've been given a script and you need to output info for the thumbnail, title, SEO description, and keywords.
+meta_prompt = """Developer: You receive a script as input. Generate a single JSON object containing video thumbnail information, a catchy title, an SEO description, and keywords, using the structure defined below. All output must be plain text—do not use markdown, special formatting, or additional syntax in any field.
 
-Output JUST a json object like this
+Instructions:
+- 'videoTitle': Write an attention-grabbing title that subverts expectations or popular beliefs, related but not identical to the thumbnail text.
+- 'image': Create a detailed, click-maximizing prompt for an SFW thumbnail image. The image must not depict harm.
+- 'text': Compose a very brief, enticing, easy-to-read phrase for thumbnail overlay, directly linked to the script and image. Use pronouns to reference the image subject, avoid complex grammar, keep it broad, and spark curiosity without giving away the video's content.
+- 'description': Write an informative, compelling, SEO-optimized description (150-160 characters), including relevant keywords.
+- 'keywords': Provide 5-8 relevant search terms as a comma-separated string, no spaces after commas.
+- Output fields must be ordered: videoTitle, image, text, description, keywords.
+
+Output Format:
+Only return the JSON object below:
 {{
-"videoTitle":"a clickbaity video title",
-"image":"a detailed prompt describing the thumbnail image",
-"text":"the text that will go over the image",
-"description":"an SEO-optimized video description",
-"keywords":"keyword1,keyword2,keyword3,keyword4,keyword5"
+  "videoTitle": "string",
+  "image": "string",
+  "text": "string",
+  "description": "string",
+  "keywords": "string"
 }}
 
-- NEVER USE ANY MARKDOWN SYNTAX LIKE * IN THE TITLE, TEXT, DESCRIPTION, KEYWORDS. JUST STRAIGHT TEXT.
-- The image prompt should be very detailed
-- The text should be based off the script
-- The text should be eye catchy and interesting and clickbaity
-- The title should contrast something expected or widely known
-- The text should just be 2-3 words
-- The text should relate to the image
-- The image and text must be SFW, not showing any harm
-- The text and video title should be related but not the same
-- The description should be 150-160 characters, SEO-optimized with relevant keywords, compelling and informative
-- The keywords should be 5-8 relevant search terms separated by commas, no spaces after commas
-- Keywords should be related to the video content and help with discoverability
-
+If the script is missing or empty, return all fields as null.
 Script:
 {script}
 """

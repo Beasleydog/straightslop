@@ -10,6 +10,7 @@ from makeSectionCard import makeSectionCardVideo
 from addOverlay import addOverlay
 from getMeta import getMeta
 from upload_video import publish_simple
+from makeIntro import makeIntro
 
 import subprocess
 import tempfile
@@ -49,7 +50,8 @@ def update_default_title():
     else:
         raise Exception("next_ideas.txt file not found")
 # Update DEFAULT_TITLE with first line from next_ideas.txt
-DEFAULT_TITLE = update_default_title()
+# DEFAULT_TITLE = update_default_title()
+DEFAULT_TITLE = "The Most Brutal Rituals of Samurai Initiation."
 
 # Config
 # DEFAULT_TITLE = "The Most Brutal Rituals of Samurai Initiation."
@@ -93,6 +95,10 @@ def main() -> None:
     
     # Plan the video
     vo_sections, plan = getPlan(DEFAULT_TITLE, model="gemini-2.5-flash")
+
+    vo_sections = vo_sections[:3]
+    plan = plan[:3]
+
     print(vo_sections)
     section_outputs: list[str] = []
 
@@ -183,13 +189,21 @@ def main() -> None:
         print("Concatenating sections...")
         combine_clips(section_outputs, "output.mp4")
         
-        # Add overlay to the final video
-        print("Adding overlay...")
-        overlay_video_path = addOverlay("output.mp4")
-        print(f"Overlay complete! Output: {overlay_video_path}")
-        
-        # Combine all scripts for metadata generation
+        # 8) Generate intro and combine with main video
+        # Combine all scripts for intro generation
         combined_script = "\n".join([section["script"] for section in vo_sections])
+        
+        print("Generating intro...")
+        intro_path = makeIntro(combined_script, "intro.mp4")
+        
+        print("Combining intro with main video...")
+        video_with_intro = os.path.join(temp_dir, "video_with_intro.mp4")
+        combine_two_clips_with_fades_av(intro_path, "output.mp4", video_with_intro, fade_seconds=CROSSFADE_SECONDS, fps=60)
+        
+        # Add overlay to the combined video (intro + main)
+        print("Adding overlay...")
+        overlay_video_path = addOverlay(video_with_intro)
+        print(f"Overlay complete! Output: {overlay_video_path}")
         
         # Generate metadata and thumbnail
         print("Generating metadata and thumbnail...")
