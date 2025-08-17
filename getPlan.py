@@ -18,6 +18,7 @@ PLAN_SECTIONS_PROMPT_TEMPLATE = """Plan out a youtube video script for this
 {topic_title}
 Output bullet point sections, each with a description of what content is included (just description, no exact vo or media plan)
 NEVER INCLUDE AN INTRO SECTION.
+END WITH A SHORT OUTRO, WRAPPING UP THE VIDEO AND ENCOURAGING THE VIEWER TO LIKE/SUBSCRIBE/COMMENT THEIR THOUGHTS.
 Minimal output, no yap, just list.
 Output JSON, like this:
 [
@@ -79,6 +80,7 @@ VO Guidelines:
 - The vo must be EXACTLY the same as the script portion
 - The vo can range from a few words to one sentence
     - It should never feel like the image is dragging on, but it also shouldn't feel like the image is too short
+    - The visuals should really align with the VO, don't be afraid to split one sentence into multiple images to really show the viewer the content
 
 You've been given the:
 {section_label}

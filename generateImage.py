@@ -179,7 +179,8 @@ def generate_image_google_imagen(prompt, output_path=None, seed=None, aspect_rat
         # generation_model = "imagen-4.0-fast-generate-preview-06-06"
         # generation_model = "imagen-4.0-ultra-generate-preview-06-06"
         # generation_model = "imagen-4.0-generate-preview-06-06"
-        generation_model = "imagen-3.0-generate-002"
+        # generation_model = "imagen-3.0-generate-002"
+        generation_model = "imagen-4.0-fast-generate-001"
 
         prompt = PROMPT_TEMPLATE.format(prompt=prompt)
 
