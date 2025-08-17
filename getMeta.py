@@ -35,6 +35,8 @@ meta_prompt = """Developer: You receive a script as input. Generate a single JSO
 
 Instructions:
 - 'videoTitle': Write an attention-grabbing title that subverts expectations or popular beliefs, related but not identical to the thumbnail text.
+    - NEVER STRUCTURE THE TITLE LIKE THIS:
+        "not X, but Y" (or anything like that)
 - 'image': Create a detailed, click-maximizing prompt for an SFW thumbnail image. The image must not depict harm.
 - 'text': Compose a very brief, enticing, easy-to-read phrase for thumbnail overlay, directly linked to the script and image. Use pronouns to reference the image subject, avoid complex grammar, keep it broad, and spark curiosity without giving away the video's content.
 - 'description': Write an informative, compelling, SEO-optimized description (150-160 characters), including relevant keywords.
