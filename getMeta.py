@@ -37,8 +37,12 @@ Instructions:
 - 'videoTitle': Write an attention-grabbing title that subverts expectations or popular beliefs, related but not identical to the thumbnail text.
     - NEVER STRUCTURE THE TITLE LIKE THIS:
         "not X, but Y" (or anything like that)
-- 'image': Create a detailed, click-maximizing prompt for an SFW thumbnail image. The image must not depict harm.
+- 'image': Create a detailed, click-maximizing prompt for an SFW thumbnail image. The image must not depict harm. The image should be a single subject, not a complex scene. Have a very clear subject on a plain background.
 - 'text': Compose a very brief, enticing, easy-to-read phrase for thumbnail overlay, directly linked to the script and image. Use pronouns to reference the image subject, avoid complex grammar, keep it broad, and spark curiosity without giving away the video's content.
+- When the viewer looks at the image and text together, they ABSOLUTELY MUST BE ABLE TO UNDERSTNAD THE VIDEO AND THE MAIN SUBJECT OF THE VIDEO.
+    - THEY LITERALLY HAVE TO BE ABLE TO UNDERSTAND IT AT A GLANCE.
+    - They don't need to know the entire message, but they need to know the main subject.
+    - Make the subject totally clear, the main message can be a bit more vague to get them hooked.
 - 'description': Write an informative, compelling, SEO-optimized description (150-160 characters), including relevant keywords.
 - 'keywords': Provide 5-8 relevant search terms as a comma-separated string, no spaces after commas.
 - Output fields must be ordered: videoTitle, image, text, description, keywords.
