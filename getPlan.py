@@ -14,7 +14,7 @@ MAX_WORKERS = int(os.getenv("GEMINI_MAX_WORKERS", "6"))
 Prompt templates (edit these to change model instructions)
 """
 
-PLAN_SECTIONS_PROMPT_TEMPLATE = """Plan out a youtube video script for this
+PLAN_SECTIONS_PROMPT_TEMPLATE = """Plan out a history video narrative youtube video script for this
 {topic_title}
 Output bullet point sections, each with a description of what content is included (just description, no exact vo or media plan)
 NEVER INCLUDE AN INTRO SECTION.
