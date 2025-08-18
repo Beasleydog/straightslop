@@ -17,13 +17,21 @@ CACHE_DIR = "cache/animatedimages"
 os.makedirs(CACHE_DIR, exist_ok=True)
 
 
-def _cache_path(image_path: str, total_frames: int):
-    """Generate cache path based on image path, frame count, and constants."""
-    key_src = f"{image_path}|frames={total_frames}|{ZOOM_MIN}|{ZOOM_MAX}|{PAN_MAX_RATIO}|{TARGET_WIDTH}|{TARGET_HEIGHT}|{FPS}".encode("utf-8")
+def _cache_path(image_path: str, total_frames: int, target_width: int, target_height: int, fps: int):
+    """Generate cache path based on inputs so different sizes/fps don't collide."""
+    key_src = (
+        f"{image_path}|frames={total_frames}|{ZOOM_MIN}|{ZOOM_MAX}|{PAN_MAX_RATIO}|{target_width}|{target_height}|{fps}".encode("utf-8")
+    )
     return os.path.join(CACHE_DIR, hashlib.md5(key_src).hexdigest() + ".mp4")
 
 
-def ken_burns_effect_ffmpeg(image_path: str, duration: float, total_frames_override: int | None = None) -> str:
+def ken_burns_effect_ffmpeg(
+    image_path: str,
+    duration: float,
+    total_frames_override: int | None = None,
+    target_size: tuple[int, int] | None = None,
+    fps_override: int | None = None,
+) -> str:
     """
     Apply Ken Burns effect to an image using ffmpeg with random pan direction and zoom direction.
     
@@ -40,9 +48,12 @@ def ken_burns_effect_ffmpeg(image_path: str, duration: float, total_frames_overr
         if total_frames_override is not None and int(total_frames_override) > 1
         else max(2, int(round(duration * FPS)))
     )
+    # Resolve output geometry and fps
+    out_w, out_h = target_size if target_size else (TARGET_WIDTH, TARGET_HEIGHT)
+    out_fps = int(fps_override) if (fps_override and int(fps_override) > 0) else FPS
 
     # Check cache first
-    cache_path = _cache_path(image_path, total_frames)
+    cache_path = _cache_path(image_path, total_frames, out_w, out_h, out_fps)
     if os.path.exists(cache_path):
         print(f"Ken Burns: Using cached animation: {cache_path}")
         return cache_path
@@ -69,8 +80,8 @@ def ken_burns_effect_ffmpeg(image_path: str, duration: float, total_frames_overr
     scaled_width = int(TARGET_WIDTH * scale_factor)
     
     # Calculate pan distances based on angle
-    pan_x_max = TARGET_WIDTH * PAN_MAX_RATIO * math.cos(pan_angle)
-    pan_y_max = TARGET_HEIGHT * PAN_MAX_RATIO * math.sin(pan_angle)
+    pan_x_max = out_w * PAN_MAX_RATIO * math.cos(pan_angle)
+    pan_y_max = out_h * PAN_MAX_RATIO * math.sin(pan_angle)
     
     # Build the filter complex
     filter_complex = (
@@ -80,7 +91,7 @@ def ken_burns_effect_ffmpeg(image_path: str, duration: float, total_frames_overr
         f"z='{zoom_start} + {zoom_range}*(on/{denom_frames})':"
         f"x='iw/2 - (iw/zoom/2) + {pan_x_max}*(on/{denom_frames})':"
         f"y='ih/2 - (ih/zoom/2) + {pan_y_max}*(on/{denom_frames})':"
-        f"d={total_frames}:s={TARGET_WIDTH}x{TARGET_HEIGHT}:fps={FPS}[v]"
+        f"d={total_frames}:s={out_w}x{out_h}:fps={out_fps}[v]"
     )
     
     cmd = [

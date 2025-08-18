@@ -9,9 +9,9 @@ from combine_with_fades import combine_clips_with_fades, combine_two_clips_with_
 from makeSectionCard import makeSectionCardVideo
 from addOverlay import addOverlay
 from getMeta import getMeta
-from upload_video import publish_simple
+from upload_video import publish_simple, publish_short
 from makeIntro import makeIntro
-
+from makeShort import makeShort
 import subprocess
 import tempfile
 import os
@@ -219,6 +219,21 @@ def main() -> None:
             keywords=meta_data['keywords']
         )
         print(f"Upload complete! Video URL: {watch_url}")
+
+        # Make short video
+        print("Making short video...")
+        short_video_path = makeShort(combined_script)
+        print(f"Short video complete: {short_video_path}")
+
+        # Upload short video to YouTube
+        print("Uploading short video to YouTube...")
+        short_watch_url = publish_short(
+            title=meta_data['title'],
+            file_path=short_video_path,
+            base_description=meta_data['description'],
+            full_video_url=watch_url,
+        )
+        print("Done!")
 
     end_time = time.time()
     elapsed_seconds = end_time - start_time

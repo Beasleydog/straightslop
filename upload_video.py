@@ -262,16 +262,122 @@ def publish_simple(title: str, file_path: str, description: str,
     poll_and_publish(yt, video_id)
     return f"https://www.youtube.com/watch?v={video_id}"
 
+def _probe_short_file(file_path: str) -> None:
+    """
+    Best-effort sanity checks for Shorts:
+      • Warn if duration > 180s (3 min)
+      • Warn if not vertical (height <= width)
+    Uses ffprobe if available; otherwise no-ops.
+    """
+    try:
+        if not shutil.which("ffprobe"):
+            print("ℹ️  ffprobe not found; skipping Shorts validation.")
+            return
+        proc = subprocess.run(
+            ["ffprobe", "-v", "error", "-show_streams", "-show_format", "-print_format", "json", file_path],
+            capture_output=True, text=True, check=True
+        )
+        info = json.loads(proc.stdout)
+        v = next((s for s in info.get("streams", []) if s.get("codec_type") == "video"), {})
+        width, height = int(v.get("width", 0)), int(v.get("height", 0))
+        # duration may be on stream or format; take whichever is present
+        dur_s = float(v.get("duration") or info.get("format", {}).get("duration") or 0.0)
+
+        if dur_s > 180.5:
+            print(f"⚠️  Duration ~{dur_s:.1f}s > 180s. Shorts are up to 3 minutes.")
+        if height <= width:
+            print(f"⚠️  Video is not vertical ({width}x{height}). Shorts work best vertical.")
+
+    except Exception as e:
+        print(f"ℹ️  Shorts validation skipped: {e}")
+
+
+def publish_short(
+    title: str,
+    file_path: str,
+    base_description: str = "",
+    full_video_url: str = "",
+    *,
+    timestamp_seconds: int | None = None,   # if set, appends &t=...s to full_video_url
+    include_hashtag_shorts: bool = False,
+    thumbnail_path: str | None = None,
+    category: str = "22",
+    keywords: str = ""
+) -> str:
+    """
+    Upload a YouTube Short (<=3 min, vertical). We upload unlisted, wait for
+    processing, then publish public if no licensed content flag (same policy
+    as publish_simple). Returns the watch URL.
+
+    Linking to full video:
+      • Puts a clickable YouTube link at the very top of the Short's description.
+      • For the in-app Shorts "Related video" pill, set it later in YouTube Studio.
+        (Not exposed via the Data API.)
+    """
+    # Build description with the full video URL at the top.
+    desc_lines = []
+    if full_video_url:
+        link = full_video_url.strip()
+        if timestamp_seconds is not None and timestamp_seconds >= 0:
+            # Add &t=...s to either /watch?v=... or youtu.be/... forms.
+            if "watch?v=" in link:
+                sep = "&" if "?" in link else "?"
+                link = f"{link}{sep}t={int(timestamp_seconds)}s"
+            elif "youtu.be/" in link:
+                sep = "?" if "?" not in link else "&"
+                link = f"{link}{sep}t={int(timestamp_seconds)}s"
+        desc_lines.append(f"Full video: {link}")
+    if base_description:
+        desc_lines.append(base_description)
+    if include_hashtag_shorts:
+        desc_lines.append("#Shorts")
+    final_description = "\n\n".join([s for s in desc_lines if s]).strip()
+
+    # Optional sanity checks for Shorts constraints
+    _probe_short_file(file_path)
+
+    yt = get_authenticated_service()
+    opts = SimpleNamespace(
+        title=title,
+        description=final_description,
+        category=category,
+        keywords=keywords,
+        file=file_path,
+    )
+
+    vid = initialize_upload(yt, opts)
+
+    if thumbnail_path:
+        try:
+            set_thumbnail(yt, vid, thumbnail_path)
+        except Exception as e:
+            print(f"⚠️  Thumbnail step failed/skipped: {e}")
+
+    poll_and_publish(yt, vid)
+    url = f"https://www.youtube.com/watch?v={vid}"
+    print(f"✅ Short published: {url}")
+    return url
+
+
 # ─── CLI boilerplate ───────────────────────────────────────────────────────────
 if __name__ == "__main__":
-    publish_simple(
+    # publish_simple(
+    #     title="Test Title",
+    #     file_path="output_overlay.mp4",
+    #     description="Test Description",
+    #     thumbnail_path="cache/thumbnails/28f4eb7f861db4adcdbe2d9d72608f38.png",
+    #     category="27",
+    #     keywords=""
+    # )
+
+    publish_short(
         title="Test Title",
-        file_path="output_overlay.mp4",
-        description="Test Description",
-        thumbnail_path="cache/thumbnails/28f4eb7f861db4adcdbe2d9d72608f38.png",
-        category="27",
-        keywords=""
+        file_path="short_captions.mp4",
+        base_description="Test Description",
+        full_video_url="https://www.youtube.com/watch?v=hVpmqpCbD6s",
     )
+
+
     # parser = argparse.ArgumentParser()
     # parser.add_argument("--file", help="Video file to upload (optional for auth-only)")
     # parser.add_argument("--title", default="Test Title", help="Video title")
