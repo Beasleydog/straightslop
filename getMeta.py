@@ -43,6 +43,7 @@ Instructions:
     - THEY LITERALLY HAVE TO BE ABLE TO UNDERSTAND IT AT A GLANCE.
     - They don't need to know the entire message, but they need to know the main subject.
     - Make the subject totally clear, the main message can be a bit more vague to get them hooked.
+    - If a random person was to look at image and text together, they should be able to understand the main subject of the video and they should be curious to learn more about it because it should be framed in an intriguing way.
 - 'description': Write an informative, compelling, SEO-optimized description (150-160 characters), including relevant keywords.
 - 'keywords': Provide 5-8 relevant search terms as a comma-separated string, no spaces after commas.
 - Output fields must be ordered: videoTitle, image, text, description, keywords.
