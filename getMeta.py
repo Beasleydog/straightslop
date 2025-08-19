@@ -38,6 +38,7 @@ Instructions:
     - NEVER STRUCTURE THE TITLE LIKE THIS:
         "not X, but Y" (or anything like that)
 - 'image': Create a detailed, click-maximizing prompt for an SFW thumbnail image. The image must not depict harm. The image should be a single subject, not a complex scene. Have a very clear subject on a plain background.
+    - THE BACKGROUND MUST TAKE UP THE FULL 16:9 ASPECT RATIO
 - 'text': Compose a very brief, enticing, easy-to-read phrase for thumbnail overlay, directly linked to the script and image. Use pronouns to reference the image subject, avoid complex grammar, keep it broad, and spark curiosity without giving away the video's content.
 - When the viewer looks at the image and text together, they ABSOLUTELY MUST BE ABLE TO UNDERSTNAD THE VIDEO AND THE MAIN SUBJECT OF THE VIDEO.
     - THEY LITERALLY HAVE TO BE ABLE TO UNDERSTAND IT AT A GLANCE.
