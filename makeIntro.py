@@ -181,17 +181,43 @@ def makeIntro(script, output_filename="intro.mp4"):
         for a, b in zip(boundaries[:-1], boundaries[1:]):
             frames_per_item.append(max(2, b - a))
 
-        # Animate each image for its duration
+        # Animate each image for its duration, compensating for time lost to crossfades
         print("Creating animated clips...")
+        requested_fade_frames = max(1, int(round(float(CROSSFADE_SECONDS) * fps)))
+        augment_frames: list[int] = [0] * len(items)
+        if len(items) >= 2:
+            for p in range(len(items) - 1):
+                left_len = int(frames_per_item[p])
+                right_len = int(frames_per_item[p + 1])
+                f_frames = max(1, min(requested_fade_frames, left_len, right_len))
+                add_left = f_frames - (f_frames // 2)
+                add_right = f_frames // 2
+                augment_frames[p] += add_left
+                augment_frames[p + 1] += add_right
+
         clip_paths: list[str] = []
-        for j, (it, nframes) in enumerate(zip(items, frames_per_item)):
-            clip_path = ken_burns_effect_ffmpeg(it["image"], nframes / fps, total_frames_override=int(nframes))
+        for j, (it, base_frames) in enumerate(zip(items, frames_per_item)):
+            total_frames = int(base_frames) + (augment_frames[j] if j < len(augment_frames) else 0)
+            clip_path = ken_burns_effect_ffmpeg(it["image"], total_frames / fps, total_frames_override=int(total_frames))
             clip_paths.append(clip_path)
 
-        # Combine animated image clips with crossfades
+        # Combine animated image clips with crossfades (pass per-pair fade override)
         print("Combining clips with crossfades...")
         combined_images = os.path.join(temp_dir, "intro_visual.mp4")
-        combine_clips_with_fades(clip_paths, combined_images, fade_seconds=CROSSFADE_SECONDS, fps=fps)
+        pair_fade_frames: list[int] = []
+        if len(clip_paths) >= 2:
+            req_fade_frames = max(1, int(round(float(CROSSFADE_SECONDS) * fps)))
+            for j in range(len(frames_per_item) - 1):
+                left = int(frames_per_item[j])
+                right = int(frames_per_item[j + 1])
+                pair_fade_frames.append(max(1, min(req_fade_frames, left, right)))
+        combine_clips_with_fades(
+            clip_paths,
+            combined_images,
+            fade_seconds=CROSSFADE_SECONDS,
+            fps=fps,
+            pair_fade_frames_override=pair_fade_frames if pair_fade_frames else None,
+        )
 
         # Add audio to the combined visuals (delay audio by FIRST_IMAGE_EXTRA_SECONDS)
         print("Muxing audio with video...")

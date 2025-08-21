@@ -197,6 +197,7 @@ def combine_clips_with_fades(
     output_path: str,
     fade_seconds: float,
     fps: int = 60,
+    pair_fade_frames_override: list[int] | None = None,
 ) -> str:
     """
     Concatenate clips with crossfades, re-encoding only the overlapping regions.
@@ -233,13 +234,16 @@ def combine_clips_with_fades(
     nb_frames = [_probe_nb_frames(p) for p in video_paths]
 
     # Compute pair-wise fade frames
-    pair_fade_frames: List[int] = []
     requested_fade_frames = max(1, int(round(fade_seconds * fps)))
-    for i in range(len(video_paths) - 1):
-        ai = nb_frames[i] if nb_frames[i] > 0 else int(round(durations[i] * fps))
-        bi = nb_frames[i + 1] if nb_frames[i + 1] > 0 else int(round(durations[i + 1] * fps))
-        f_frames = max(1, min(requested_fade_frames, ai, bi))
-        pair_fade_frames.append(f_frames)
+    if pair_fade_frames_override is not None and len(pair_fade_frames_override) == max(0, len(video_paths) - 1):
+        pair_fade_frames: List[int] = [max(1, int(v)) for v in pair_fade_frames_override]
+    else:
+        pair_fade_frames = []
+        for i in range(len(video_paths) - 1):
+            ai = nb_frames[i] if nb_frames[i] > 0 else int(round(durations[i] * fps))
+            bi = nb_frames[i + 1] if nb_frames[i + 1] > 0 else int(round(durations[i + 1] * fps))
+            f_frames = max(1, min(requested_fade_frames, ai, bi))
+            pair_fade_frames.append(f_frames)
 
     with tempfile.TemporaryDirectory() as temp_dir:
         segment_paths: List[str] = []
